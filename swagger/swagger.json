@@ -1,0 +1,488 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "Book shop API",
+		"version": "1.0.0",
+		"description": "API for managing book shelf of a bookshop, with user authentication using JWT."
+	},
+	"servers": [
+		{
+			"url": "http://localhost:3000",
+			"description": "Local server"
+		}
+	],
+	"tags": [
+		{
+			"name": "Auth",
+			"description": "Endpoints related to user authentication"
+		},
+		{
+			"name": "Book",
+			"description": "Endpoints to manage book shelf "
+		},
+		{
+			"name": "Public",
+			"description": "Endpoints without need to Authentication"
+		},
+		{
+			"name": "Protected",
+			"description": "Endpoints need to Authenticate before using theme"
+		}
+	],
+	"paths": {
+		"/auth/register": {
+			"post": {
+				"tags": ["Auth"],
+				"summary": "Register a new user",
+				"description": "Create a new user with a username and password.",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/RegisterUser"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "User registered successfully"
+					},
+					"400": {
+						"description": "User already exists"
+					}
+				}
+			}
+		},
+		"/auth/login": {
+			"post": {
+				"tags": ["Auth"],
+				"summary": "Login a user",
+				"description": "Login with a username and password, and receive a JWT token.",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/LoginUser"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User logged in successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/LoginResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid credentials"
+					}
+				}
+			}
+		},
+		"/book": {
+			"get": {
+      "tags": ["Public", "Book"],
+      "summary": "Get all books with pagination and search",
+      "description": "Retrieve all books with optional pagination and search filters (title, price range).",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "description": "Page number for pagination (must be 1 or higher).",
+          "schema": {
+            "type": "integer",
+            "default": 1,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "description": "Number of books per page (must be 1 or higher).",
+          "schema": {
+            "type": "integer",
+            "default": 10,
+            "minimum": 1
+          }
+        },
+        {
+          "name": "title",
+          "in": "query",
+          "description": "Filter books by title (case-insensitive search).",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "minPrice",
+          "in": "query",
+          "description": "Filter by minimum price.",
+          "schema": {
+            "type": "number"
+          }
+        },
+        {
+          "name": "maxPrice",
+          "in": "query",
+          "description": "Filter by maximum price.",
+          "schema": {
+            "type": "number"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "A paginated list of books with optional filters applied.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "totalBooks": {
+                    "type": "integer",
+                    "description": "Total number of books matching the filters."
+                  },
+                  "page": {
+                    "type": "integer",
+                    "description": "Current page number."
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Number of books per page."
+                  },
+                  "totalPages": {
+                    "type": "integer",
+                    "description": "Total number of pages."
+                  },
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Book"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid page, price range, or other query parameters.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "example": "Page 10 is out of bounds. There are only 5 pages."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+			"post": {
+				"tags": ["Book", "Protected"],
+				"summary": "Create a new book",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"description": "Add a new book to the shelf (requires authentication)",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewBook"
+							}
+						}
+					}
+				},
+				"responses": {
+					"201": {
+						"description": "Book created successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Book"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized, token missing or invalid"
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Book", "Protected"],
+				"summary": "Delete multiple books",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"description": "Delete books by an array of book IDs (requires authentication)",
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/DeleteBooks"
+							}
+						}
+					}
+				},
+				"responses": {
+					"204": {
+						"description": "Books deleted successfully"
+					},
+					"401": {
+						"description": "Unauthorized, token missing or invalid"
+					}
+				}
+			}
+		},
+		"/book/{id}": {
+			"get": {
+				"tags": ["Public", "Book"],
+				"summary": "Get book by ID",
+				"description": "Get a book by its ID",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						},
+						"description": "The UUID of the book to retrieve"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "A single book",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Book"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "book not found"
+					}
+				}
+			},
+			"put": {
+				"tags": ["Protected", "Book"],
+				"summary": "Update a book",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"description": "Update an existing book by its ID (requires authentication)",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						},
+						"description": "The UUID of the book to update"
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/NewBook"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Product updated successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/Book"
+								}
+							}
+						}
+					},
+					"401": {
+						"description": "Unauthorized, token missing or invalid"
+					},
+					"404": {
+						"description": "Book not found"
+					}
+				}
+			},
+			"delete": {
+				"tags": ["Protected", "Book"],
+				"summary": "Delete a book by ID",
+				"security": [
+					{
+						"BearerAuth": []
+					}
+				],
+				"description": "Delete a book by its ID (requires authentication)",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"format": "uuid"
+						},
+						"description": "The UUID of the product to delete"
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Book deleted successfully"
+					},
+					"401": {
+						"description": "Unauthorized, token missing or invalid"
+					},
+					"404": {
+						"description": "Product not found"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"RegisterUser": {
+				"type": "object",
+				"required": ["username", "password"],
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				}
+			},
+			"LoginUser": {
+				"type": "object",
+				"required": ["username", "password"],
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				}
+			},
+			"LoginResponse": {
+				"type": "object",
+				"properties": {
+					"token": {
+						"type": "string",
+						"description": "JWT token for authenticating requests"
+					}
+				}
+			},
+			"Book": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"format": "uuid",
+						"description": "The unique UUID of the Book"
+					},
+					"title": {
+						"type": "string",
+						"description": "The title of the book"
+					},
+					"summary": {
+						"type": "string",
+						"description": "The summary of the book"
+					},
+					"author": {
+						"type": "string",
+						"description": "The author of the book"
+					},
+					"price": {
+						"type": "number",
+						"description": "The price of the book"
+					},
+					"quantity": {
+						"type": "integer",
+						"description": "The quantity of this book in stock"
+					}
+				}
+			},
+			"NewBook": {
+				"type": "object",
+				"required": ["title", "summary", "author",  "price", "quantity"],
+				"properties": {
+					"title": {
+						"type": "string",
+						"description": "The title of the book"
+					},
+					"summary": {
+						"type": "string",
+						"description": "The summary of the book"
+					},
+					"author": {
+						"type": "string",
+						"description": "The author of the book"
+					},
+					"price": {
+						"type": "number",
+						"description": "The price of the product"
+					},
+					"quantity": {
+						"type": "integer",
+						"description": "The quantity of the product in stock"
+					}
+				}
+			},
+			"DeleteBooks": {
+				"type": "object",
+				"properties": {
+					"ids": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"format": "uuid"
+						}
+					}
+				}
+			}
+		},
+		"securitySchemes": {
+			"BearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
+	}
+}
