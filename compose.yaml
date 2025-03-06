@@ -4,6 +4,7 @@ services:
       context: .
     environment:
       NODE_ENV: production
+      PORT: ${PORT}
       BASE_URL: ${BASE_URL}
     ports:
       - 3001:3001
