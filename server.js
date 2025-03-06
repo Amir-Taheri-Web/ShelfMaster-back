@@ -3,13 +3,12 @@ const cors = require("cors");
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const swaggerUi = require("swagger-ui-express");
-require('dotenv').config()
+require("dotenv").config();
 
 // Load swagger configuration
 let swaggerDocument = require("./swagger/swagger.json");
 
 const app = express();
-const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 
 // Middleware to parse JSON bodies
@@ -25,21 +24,19 @@ app.use("/auth", authRoutes);
 // Helper function to start server and try the next port if the current one is taken
 function startServer(port, baseUrl) {
   const server = app.listen(port, () => {
-    console.log(`Server is running on ${baseUrl}:${port}`);
+    console.log(`Server is running on ${baseUrl}`);
 
     // Update Swagger with the correct port
     swaggerDocument.servers = [
       {
-        url: `${baseUrl}:${port}`,
-        description: "Local server",
+        url: `${baseUrl}`,
+        description: "Backend Domain",
       },
     ];
 
     // Serve updated Swagger docs
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-    console.log(
-      `Swagger API docs are available at ${baseUrl}:${port}/api-docs`
-    );
+    console.log(`Swagger API docs are available at ${baseUrl}/api-docs`);
   });
 
   // Handle error in case the port is in use
