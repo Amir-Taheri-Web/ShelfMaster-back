@@ -9,6 +9,7 @@ require("dotenv").config();
 let swaggerDocument = require("./swagger/swagger.json");
 
 const app = express();
+const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 
 // Middleware to parse JSON bodies
@@ -24,7 +25,7 @@ app.use("/auth", authRoutes);
 // Helper function to start server and try the next port if the current one is taken
 function startServer(port, baseUrl) {
   const server = app.listen(port, () => {
-    console.log(`Server is running on ${baseUrl}`);
+    console.log(`Server is running on ${baseUrl}:${port}`);
 
     // Update Swagger with the correct port
     swaggerDocument.servers = [
