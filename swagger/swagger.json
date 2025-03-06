@@ -1,9 +1,9 @@
 {
 	"openapi": "3.0.0",
 	"info": {
-		"title": "Book shop API",
+		"title": "ShelfMaster",
 		"version": "1.0.0",
-		"description": "API for managing book shelf of a bookshop, with user authentication using JWT."
+		"description": "API for managing book shelf of a ShelfMaster, with user authentication using JWT."
 	},
 	"servers": [
 		{
