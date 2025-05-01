@@ -10,3 +10,5 @@ services:
     pull_policy: always # ⬅️ Ensures it always pulls the latest image
     ports:
       - 3001:3001
+    volumes:
+      - ./data:/usr/src/app/data
