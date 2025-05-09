@@ -138,8 +138,8 @@ router.put('/:id', authenticateToken, (req, res) => {
 router.delete('/:id', authenticateToken, (req, res) => {
 	const products = readProducts();
 	const newProducts = products.filter((p) => p.id !== req.params.id);
-	// if (products.length === newProducts.length)
-	// 	return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
+	if (products.length === newProducts.length)
+		return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
 
 	writeProducts(newProducts);
 	res.status(204).send();
