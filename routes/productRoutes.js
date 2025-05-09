@@ -100,8 +100,8 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
 	const products = readProducts();
 	const product = products.find((p) => p.id === req.params.id);
-	// if (!product)
-	// 	return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
+	if (!product)
+		return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
 	res.json(product);
 });
 
@@ -138,8 +138,8 @@ router.put('/:id', authenticateToken, (req, res) => {
 router.delete('/:id', authenticateToken, (req, res) => {
 	const products = readProducts();
 	const newProducts = products.filter((p) => p.id == req.params.id);
-	if (products.length === newProducts.length)
-		return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
+	// if (products.length === newProducts.length)
+	// 	return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
 
 	writeProducts(newProducts);
 	res.status(204).send();
