@@ -137,7 +137,7 @@ router.put('/:id', authenticateToken, (req, res) => {
 // DELETE a product by ID (protected)
 router.delete('/:id', authenticateToken, (req, res) => {
 	const products = readProducts();
-	const newProducts = products.filter((p) => p.id == req.params.id);
+	const newProducts = products.filter((p) => p.id !== req.params.id);
 	if (products.length === newProducts.length)
 		return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
 
