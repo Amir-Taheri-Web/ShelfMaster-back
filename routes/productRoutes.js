@@ -100,8 +100,8 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
 	const products = readProducts();
 	const product = products.find((p) => p.id === req.params.id);
-	if (!product)
-		return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
+	// if (!product)
+	// 	return res.status(404).json({ message: 'کتاب درخواستی یافت نشد' });
 	res.json(product);
 });
 
