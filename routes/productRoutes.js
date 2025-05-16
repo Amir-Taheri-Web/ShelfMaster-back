@@ -49,8 +49,8 @@ router.get('/', (req, res) => {
 	// Case-insensitive search by product name
 	if (title) {
 		filteredProducts = filteredProducts?.filter((product) => {
-			if (product?.title) {
-				return product?.title?.toLowerCase()?.includes(title?.toLowerCase());
+			if (product.title) {
+				return product.title.toLowerCase().includes(title.toLowerCase());
 			}
 		});
 	}
