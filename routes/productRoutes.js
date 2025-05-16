@@ -95,7 +95,7 @@ router.get('/', (req, res) => {
 		page,
 		limit,
 		totalPages,
-		data: [],
+		data: paginatedProducts,
 	});
 });
 
