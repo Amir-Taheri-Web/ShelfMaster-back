@@ -36,10 +36,10 @@ router.get('/', (req, res) => {
 	const totalBooks = filteredProducts.length;
 	const totalPages = Math.ceil(totalBooks / limit);
 	const startIndex = (page - 1) * limit;
-	const paginatedProducts = filteredProducts.slice(
-		startIndex,
-		startIndex + limit
-	);
+	// const paginatedProducts = filteredProducts.slice(
+	// 	startIndex,
+	// 	startIndex + limit
+	// );
 
 	if (!totalPages)
 		return res.status(400).json({
@@ -85,6 +85,11 @@ router.get('/', (req, res) => {
 			message: `Page ${page} is out of bounds. There are only ${totalPages} pages.`,
 		});
 	}
+
+	const paginatedProducts = filteredProducts.slice(
+		startIndex,
+		startIndex + limit
+	);
 
 	// Response with paginated products and total count
 	res.json({
