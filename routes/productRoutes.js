@@ -57,20 +57,20 @@ router.get('/', (req, res) => {
 	const minPriceNum = parseFloat(minPrice);
 	const maxPriceNum = parseFloat(maxPrice);
 
-	if (isNaN(minPriceNum)) {
+	if (!isNaN(minPriceNum)) {
 		filteredProducts = filteredProducts.filter(
 			(product) => product.price >= minPriceNum
 		);
 	}
 
-	if (isNaN(maxPriceNum)) {
+	if (!isNaN(maxPriceNum)) {
 		filteredProducts = filteredProducts.filter(
 			(product) => product.price <= maxPriceNum
 		);
 	}
 
 	// Check if minPrice is greater than maxPrice
-	if (isNaN(minPriceNum) && isNaN(maxPriceNum) && minPriceNum > maxPriceNum) {
+	if (!isNaN(minPriceNum) && !isNaN(maxPriceNum) && minPriceNum > maxPriceNum) {
 		return res
 			.status(400)
 			.json({ message: 'minPrice cannot be greater than maxPrice' });
